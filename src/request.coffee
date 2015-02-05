@@ -30,55 +30,25 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-{httpSync} = require 'request-sync'
+httpSync = require 'sync-request'
 {extend} = require 'underscore'
-parseUrl = require('url').parse
 
-TIMEOUT = 60000
+TIMEOUT = 6000
 CONNECT_TIMEOUT = 2000
-
-makeRequest = (request, data) ->
-  if data
-    request.end(data)
-  else
-    request.end()
-
-getProtocol = (protocolPart) ->
-  protocolPart.replace(/:$/, '')
-
-getUrlParts = (url) ->
-  parts = parseUrl(url)
-
-  # the translations done here are based on the
-  # expectations of http-sync
-  {
-    port: parts.port
-    path: parts.path
-
-    # port must not be included
-    host: parts.hostname
-
-    # trailing `:` must not be included
-    protocol: getProtocol(parts.protocol)
-  }
 
 module.exports = ({timeout, connectTimeout}) ->
   timeout ?= TIMEOUT
   connectTimeout ?= CONNECT_TIMEOUT
 
-  (url, method='get', data=null) ->
-    options = {
-      method
-    }
+  (url, method='GET', data=null) ->
 
-    options = extend {}, options, getUrlParts(url)
+    options = {}
+    options.json = data if data
+    options.timeout = timeout
+    options.socketTimeout = connectTimeout
 
-    httpSyncRequest = httpSync.request(options)
-
-    httpSyncRequest.setTimeout timeout, ->
-      throw new Error "Request timed out after #{timeout}ms to: #{url}"
-    httpSyncRequest.setConnectTimeout connectTimeout, ->
-      throw new Error "Request connection timed out after #{connectTimeout}ms to: #{url}"
-
-    makeRequest(httpSyncRequest, data)
+    console.log '-> ', method, url, JSON.stringify(options)
+    result = httpSync(method, url, options).body.toString()
+    console.log '<- ', result
+    result
 
