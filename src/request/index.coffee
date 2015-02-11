@@ -30,27 +30,35 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-httpSync = require 'sync-request'
-{extend} = require 'underscore'
+{spawnSync} = require 'child_process'
+
+spawnSync ?= require 'spawn-sync'
 debug = require('debug')('webdriver-http-sync:request')
 
-TIMEOUT = 25000
-CONNECT_TIMEOUT = 15000
+TIMEOUT = 10000
+CONNECT_TIMEOUT = 6000
 
 module.exports = ({timeout, connectTimeout}) ->
   timeout ?= TIMEOUT
   connectTimeout ?= CONNECT_TIMEOUT
 
+  workerFile = require.resolve './worker.js'
+  nodeExec = process.execPath
+
   (url, method='GET', data=null) ->
-    options =
-      timeout: timeout
-      socketTimeout: connectTimeout
-      followRedirects: false
-      gzip: false
-      cache: false
-      retry: false
-
-    options.json = data if data
-
     debug '%s %s', method, url, data
-    httpSync method, url, options
+
+    input = JSON.stringify {
+      method,
+      url,
+      json: data
+    }
+    result = spawnSync nodeExec, [ workerFile ], {input}
+    process.stderr.write result.stderr
+
+    try
+      JSON.parse result.stdout.toString()
+    catch err
+      throw new Error """
+        Failed to communicate with webdriver: #{err.message}
+      """

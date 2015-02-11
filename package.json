@@ -25,17 +25,16 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "assertive": "~1.2.0",
+    "assertive": "^1.4.0",
     "coffee-script": "^1.9.0",
-    "debug": "~2.1.1",
-    "http-basic": "git://github.com/jkrems/http-basic#preserve-header-casing",
-    "sync-request": "^2.0.0",
-    "then-request": "git://github.com/jkrems/request-1#preserve-header-casing",
-    "underscore": "~1.5.2"
+    "concat-stream": "^1.4.7",
+    "debug": "^2.1.1",
+    "spawn-sync": "^1.0.4",
+    "lodash": "^3.1.0"
   },
   "devDependencies": {
-    "mocha": "~2.1.0",
+    "mocha": "^2.1.0",
     "npub": "0.0.5",
-    "semver": "~1.1.4"
+    "semver": "^1.1.4"
   }
 }

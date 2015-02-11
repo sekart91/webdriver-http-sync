@@ -20,20 +20,20 @@ describe 'Webdriver', ->
     execFile testServer, [ '' + webPort ]
     setTimeout done, 200
 
-  before 'boot phantomjs', (done) ->
-    phantomArgs = [ "--webdriver=#{phantomPort}" ]
-    @phantom = execFile 'phantomjs', phantomArgs
-    phantomOut = ''
-    @phantom.on 'error', done
+  # before 'boot phantomjs', (done) ->
+  #   phantomArgs = [ "--webdriver=#{phantomPort}" ]
+  #   @phantom = execFile 'phantomjs', phantomArgs
+  #   phantomOut = ''
+  #   @phantom.on 'error', done
 
-    waitForBoot = (chunk) =>
-      phantomOut += chunk.toString 'utf8'
-      if -1 != phantomOut.indexOf "running on port #{phantomPort}"
-        phantomOut = ''
-        @phantom.stdout.removeListener 'data', waitForBoot
-        done()
+  #   waitForBoot = (chunk) =>
+  #     phantomOut += chunk.toString 'utf8'
+  #     if -1 != phantomOut.indexOf "running on port #{phantomPort}"
+  #       phantomOut = ''
+  #       @phantom.stdout.removeListener 'data', waitForBoot
+  #       done()
 
-    @phantom.stdout.on 'data', waitForBoot
+  #   @phantom.stdout.on 'data', waitForBoot
 
   before 'create driver', ->
     @driver = new WebDriver "#{phantomUrl}", {
@@ -46,8 +46,8 @@ describe 'Webdriver', ->
   after 'close session', ->
     @driver.close()
 
-  after 'tear down phantom', ->
-    try @phantom?.kill()
+  # after 'tear down phantom', ->
+  #   try @phantom?.kill()
 
   it 'can get the page title', ->
     assert.equal webTitle, @driver.getPageTitle()
