@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+'use strict';
+
+var http = require('http');
+
+var webPort = +process.argv[2];
+
+function respondHtml(req, res) {
+  res.end([
+    '<!DOCTYPE html>',
+    '<html>',
+    '<head>',
+    '<title>A title</title>',
+    '</head>',
+    '<body>',
+    '<h1>A heading</h1>',
+    '</body>',
+    '</html>'
+  ].join('\n'));
+}
+
+http.createServer(respondHtml).listen(webPort);

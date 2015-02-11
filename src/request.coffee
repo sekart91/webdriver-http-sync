@@ -32,23 +32,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 httpSync = require 'sync-request'
 {extend} = require 'underscore'
+debug = require('debug')('webdriver-http-sync:request')
 
-TIMEOUT = 6000
-CONNECT_TIMEOUT = 2000
+TIMEOUT = 25000
+CONNECT_TIMEOUT = 15000
 
 module.exports = ({timeout, connectTimeout}) ->
   timeout ?= TIMEOUT
   connectTimeout ?= CONNECT_TIMEOUT
 
   (url, method='GET', data=null) ->
+    options =
+      timeout: timeout
+      socketTimeout: connectTimeout
+      followRedirects: false
+      gzip: false
+      cache: false
+      retry: false
 
-    options = {}
     options.json = data if data
-    options.timeout = timeout
-    options.socketTimeout = connectTimeout
 
-    console.log '-> ', method, url, JSON.stringify(options)
-    result = httpSync(method, url, options).body.toString()
-    console.log '<- ', result
-    result
-
+    debug '%s %s', method, url, data
+    httpSync method, url, options

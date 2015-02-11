@@ -20,17 +20,22 @@
     "url": "git://github.com/groupon-testium/webdriver-http-sync"
   },
   "scripts": {
-    "build": "./node_modules/.bin/coffee -cbo lib src && ./node_modules/.bin/npub prep src"
+    "build": "./node_modules/.bin/coffee -cbo lib src && ./node_modules/.bin/npub prep src",
+    "test": "mocha"
   },
   "main": "lib/index.js",
   "dependencies": {
     "assertive": "~1.2.0",
     "coffee-script": "^1.9.0",
+    "debug": "~2.1.1",
+    "http-basic": "git://github.com/jkrems/http-basic#preserve-header-casing",
     "sync-request": "^2.0.0",
+    "then-request": "git://github.com/jkrems/request-1#preserve-header-casing",
     "underscore": "~1.5.2"
   },
   "devDependencies": {
-    "semver": "~1.1.4",
-    "npub": "0.0.5"
+    "mocha": "~2.1.0",
+    "npub": "0.0.5",
+    "semver": "~1.1.4"
   }
 }
