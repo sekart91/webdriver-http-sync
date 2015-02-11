@@ -61,4 +61,5 @@ module.exports = ({timeout, connectTimeout}) ->
     catch err
       throw new Error """
         Failed to communicate with webdriver: #{err.message}
+        Result: #{JSON.stringify result.stdout.toString()}
       """

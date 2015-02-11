@@ -21,12 +21,13 @@ process.stdin.pipe concat (rawInput) ->
   req.on 'response', (res) ->
     res.setEncoding 'utf8'
     res.pipe concat (body) ->
-      console.log JSON.stringify {
+      result = JSON.stringify({
         statusCode: res.statusCode
         headers: res.headers
         body: body
-      }
-      process.exit 0
+      }) + '\n'
+      process.stdout.write result, ->
+        process.exit 0
 
   if data then req.end data
   else req.end()
