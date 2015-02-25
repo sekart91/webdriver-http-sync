@@ -19,4 +19,25 @@ function respondHtml(req, res) {
   ].join('\n'));
 }
 
-http.createServer(respondHtml).listen(webPort);
+function respondJSON(req, res) {
+  var body = '';
+  req.setEncoding('utf8');
+  req.on('data', function(chunk) { body += chunk; });
+  req.on('end', function() {
+    res.end(JSON.stringify({
+      headers: req.headers,
+      method: req.method,
+      url: req.url,
+      body: body
+    }));
+  });
+}
+
+function handler(req, res) {
+  if (/^\/json/.test(req.url)) {
+    return respondJSON(req, res);
+  }
+  return respondHtml(req, res);
+}
+
+http.createServer(handler).listen(webPort);

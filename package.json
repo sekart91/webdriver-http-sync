@@ -29,7 +29,7 @@
     "coffee-script": "^1.9.0",
     "concat-stream": "^1.4.7",
     "debug": "^2.1.1",
-    "spawn-sync": "^1.0.4",
+    "http-sync": "git://github.com/jkrems/http-sync#using-nan",
     "lodash": "^3.1.0"
   },
   "devDependencies": {

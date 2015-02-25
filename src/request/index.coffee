@@ -30,36 +30,42 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-{spawnSync} = require 'child_process'
+{parse: parseUrl} = require 'url'
 
-spawnSync ?= require 'spawn-sync'
+{request} = require 'http-sync'
 debug = require('debug')('webdriver-http-sync:request')
 
 TIMEOUT = 10000
 CONNECT_TIMEOUT = 6000
 
-module.exports = ({timeout, connectTimeout}) ->
+makeResponse = ({headers, body, statusCode}) ->
+  lcHeaders = {}
+  for name, value of headers
+    lcHeaders[name.toLowerCase()] = value
+  { headers: lcHeaders, body: body.toString('utf8'), statusCode }
+
+module.exports = ({timeout, connectTimeout} = {}) ->
   timeout ?= TIMEOUT
   connectTimeout ?= CONNECT_TIMEOUT
-
-  workerFile = require.resolve './worker.js'
-  nodeExec = process.execPath
 
   (url, method='GET', data=null) ->
     debug '%s %s', method, url, data
 
-    input = JSON.stringify {
-      method,
-      url,
-      json: data
-    }
-    result = spawnSync nodeExec, [ workerFile ], {input}
-    process.stderr.write result.stderr
+    body =
+      if data? then new Buffer JSON.stringify(data), 'utf8'
+      else new Buffer ''
 
-    try
-      JSON.parse result.stdout.toString()
-    catch err
-      throw new Error """
-        Failed to communicate with webdriver: #{err.message}
-        Result: #{JSON.stringify result.stdout.toString()}
-      """
+    options = parseUrl url
+    options.host = options.hostname
+    options.method = method
+    options.headers =
+      'Content-Type': 'application/json'
+      'Content-Length': body.length
+      'X-Foo': 'bar'
+
+    req = request options
+    req.write body
+    # req.setTimeout timeout
+    # req.setConnectTimeout connectTimeout
+    result = req.end()
+    makeResponse result

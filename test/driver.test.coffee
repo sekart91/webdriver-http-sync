@@ -17,7 +17,8 @@ testServer = path.join __dirname, 'test-server'
 
 describe 'Webdriver', ->
   before 'example website', (done) ->
-    execFile testServer, [ '' + webPort ]
+    @server = execFile testServer, [ '' + webPort ]
+    @server.stderr.pipe process.stderr
     setTimeout done, 200
 
   before 'boot phantomjs', (done) ->
@@ -44,10 +45,13 @@ describe 'Webdriver', ->
     @driver.navigateTo webUrl
 
   after 'close session', ->
-    @driver.close()
+    @driver?.close()
 
   after 'tear down phantom', ->
     try @phantom?.kill()
+
+  after 'tear down test-server', ->
+    try @server?.kill()
 
   it 'can get the page title', ->
     assert.equal webTitle, @driver.getPageTitle()
